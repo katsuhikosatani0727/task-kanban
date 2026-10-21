@@ -32,11 +32,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ├── .claude/              # Claude Code 設定（settings.local.json で supabase MCP を有効化）
 ├── public/                # 静的アセット（svg 等）
 ├── src/
-│   └── app/               # App Router のルート・レイアウト・ページ
-│       ├── layout.tsx
-│       ├── page.tsx
-│       ├── page.test.tsx  # テストは対象コードと同じディレクトリに配置
-│       └── globals.css
+│   ├── app/               # App Router のルート・レイアウト・ページ
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── page.test.tsx  # テストは対象コードと同じディレクトリに配置
+│   │   └── globals.css
+│   ├── lib/
+│   │   └── supabase.ts    # Supabaseクライアントと接続確認関数（checkSupabaseConnection）
+│   └── instrumentation.ts # サーバ起動時にSupabase接続状況を確認するフック（register）
 ├── AGENTS.md              # next dev が自動生成・更新（削除しないこと）
 ├── CLAUDE.md
 ├── eslint.config.mjs      # ESLint flat config
@@ -77,8 +80,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 既存のテストを削除しないでください
 - any型を使用しないでください
 
-## 禁止事項
+## MCP活用ルール
 - Next.js・Supabase・Vitestなどの最新仕様はContext7　MCPを使って公式ドキュメントを確認してください。
+
+## Supabase接続
+- 環境変数のキーは.env.exampleファイルを参考にする
+- 実際の値は.env.localファイルに記載されている前提とする（`.env*`は`.gitignore`済みでコミットされない）
+- Next.jsサーバの起動時にSupabaseへの接続状況をコンソールログに表示する
+- Supabaseプロジェクトの情報はMCPで確認する
+
+### 実装の考え方
+- SupabaseへのアクセスはすべてSupabase公式クライアントライブラリ（`@supabase/supabase-js`）経由で行う。プロジェクト全体で共有できるよう、クライアントの生成処理は1か所（`src/lib`配下）にまとめてある
+- そこには「実際にSupabaseへ問い合わせて、応答が返ってくるか」を確認するための小さな接続チェック処理も用意してある。まだデータベースにテーブルを作っていなくても使える、軽量な疎通確認のみを行う
+- Next.jsのサーバが起動するタイミングで一度だけ実行される仕組み（instrumentation）を使って、起動直後にこの接続チェックを自動実行している。サーバ起動中は常にSupabaseへ接続できる状態かを把握できる
+- ログの出し方：接続に成功した場合は何も出力しない。接続に失敗した場合のみ、原因調査のためのエラーログを出力する
+- `.env.example`に書かれている接続先URLはSupabaseの管理画面（ダッシュボード）のページURLであり、実際にプログラムから接続すべきAPIのURLとは異なる。`.env.local`には管理画面のURLではなく、実際のAPIエンドポイントのURLを設定すること
+- 対象のSupabaseプロジェクトや、URL・接続キーなどの情報はMCP経由で確認できる（プロジェクト名: `Task-Kanban`、リージョン: `ap-southeast-2`）
 
 ## 備考
 
