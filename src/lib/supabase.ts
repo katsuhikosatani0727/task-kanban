@@ -14,7 +14,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export async function checkSupabaseConnection(): Promise<boolean> {
   try {
     const response = await fetch(`${supabaseUrl}/auth/v1/health`, {
-      headers: { apikey: supabaseKey },
+      headers: { apikey: supabaseKey! },
     });
     return response.ok;
   } catch {
