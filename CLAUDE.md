@@ -6,6 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `task-kanban` — `create-next-app` でスキャフォルドされた Next.js 16（App Router, Turbopack）+ TypeScript + Tailwind CSS v4 プロジェクト。`.claude/settings.local.json` で `supabase` MCP サーバーを有効化している（現時点ではまだ利用コードはない）。
 
+## 技術スタック
+- Next.js
+- TypeScript
+- Supabase
+- Vitest + Testing Library（テスト）
+- Vercel (デプロイ)
+
 ## コマンド
 
 - `npm run dev` — 開発サーバー起動（Turbopack）
