@@ -162,7 +162,8 @@ describe("TaskBoard タスクの編集", () => {
 
     queueFromResult({ data: { ...rowA, status: "done" }, error: null });
 
-    await userEvent.selectOptions(screen.getByLabelText("編集: ステータス"), "done");
+    await userEvent.click(screen.getByLabelText("編集: ステータス"));
+    await userEvent.click(await screen.findByRole("option", { name: "完了" }));
     await userEvent.click(screen.getByRole("button", { name: "更新" }));
 
     expect(await screen.findByText("完了")).toBeInTheDocument();

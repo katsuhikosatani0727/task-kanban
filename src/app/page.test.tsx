@@ -6,18 +6,13 @@ describe("Home", () => {
   it("見出しテキストが表示される", () => {
     render(<Home />);
 
-    expect(
-      screen.getByText("file.", { exact: false })
-    ).toBeInTheDocument();
+    expect(screen.getByText("タスク管理カンバン")).toBeInTheDocument();
   });
 
-  it("Documentationリンクが正しいURLを指す", () => {
+  it("「タスクを見る」リンクが/tasksを指す", () => {
     render(<Home />);
 
-    const link = screen.getByRole("link", { name: "Documentation" });
-    expect(link).toHaveAttribute(
-      "href",
-      expect.stringContaining("nextjs.org/docs")
-    );
+    const link = screen.getByRole("link", { name: "タスクを見る" });
+    expect(link).toHaveAttribute("href", "/tasks");
   });
 });

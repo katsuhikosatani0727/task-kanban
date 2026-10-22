@@ -77,6 +77,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `src/app/globals.css`のテーマ変数（`--background`/`--primary`等）はshadcn/uiのCSS変数方式で管理されている。独自の色を追加する場合もこの変数方式に合わせる
 - `cn`（クラス名結合ユーティリティ）は`src/lib/utils.ts`経由でimportする（実体は`cn`パッケージの再exportであり、`clsx`/`tailwind-merge`を直接importしない）
 
+## デザインルール（UI）
+
+- 画面の構成単位は shadcn/ui の `Card`（`CardHeader`/`CardTitle`/`CardDescription`/`CardContent`/`CardFooter`/`CardAction`）でまとめる。フォーム1つ・一覧の各アイテム1つにつき `Card` 1枚を対応させる
+- ボタンは `Button` の `variant` で役割を使い分ける。主要アクション（追加・更新）は `default`、キャンセルなど補助的な操作は `outline`、削除など破壊的な操作は `destructive`
+- フォーム入力は `Label` + `Input`/`Textarea`/`Select` の組み合わせで作る。`Label` の `htmlFor` と対象コントロールの `id` は必ず一致させる（テストで `getByLabelText` を使うため）
+- 選択肢（ステータスなど）は shadcn/ui の `Select`（Radixベース）を使う。ネイティブの `<select>` は使わない
+- エラーメッセージ・確認メッセージ（例: 削除確認）は `Alert` + `AlertTitle`/`AlertDescription` で表示する。`Alert` は `role="alert"` を標準で持つため、個別に `role` 属性を付与する必要はない
+- ステータスなどのラベル表示には `Badge` を使う。色分けが必要な場合は `variant="outline"` をベースに `className` でTailwindの色クラスを上書きする（`cn` はtailwind-merge相当のため、後から渡したクラスが安全に優先される）
+- 配色はできる限り `globals.css` のCSS変数（`--primary`/`--destructive`/`--muted` 等）に乗せたトークンベースのクラス（`bg-primary`など）を使う。Tailwindの生の色クラス（例: `bg-amber-100`）はBadgeの差し色など限定的な用途にとどめ、画面全体のトーンはトークン経由にする
+- ページ全体のレイアウトは `max-w-2xl` 程度の中央寄せカラムとし、背景は `bg-gradient-to-b from-zinc-100 to-zinc-200 dark:from-black dark:to-zinc-900` のグラデーションを基調にする
+- shadcn/uiの `Select` など Radix ベースのコンポーネントをVitestでテストする場合、jsdomに `hasPointerCapture`/`releasePointerCapture`/`scrollIntoView`/`ResizeObserver` のポリフィルが必要（`vitest.setup.ts` に追加済み）。`userEvent.selectOptions` は使えないため、トリガーをクリックしてから `getByRole("option", { name })` をクリックする形でテストする
+
 ## データモデル（Supabase）
 
 - `tasks`テーブル（マイグレーション`20261021171558_create_tasks_table`で作成。RLS有効）
@@ -97,6 +109,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - コンポーネントは関数コンポーネントで記述してください
 - 変数名・関数名はキャメルケースで書いてください
 - コミットメッセージは日本語で書いてください
+- プロンプトでの会話はすべて日本語で行ってください
 
 ## テストルール
 - 網羅性：正常系・異常系・境界値を検討してください
