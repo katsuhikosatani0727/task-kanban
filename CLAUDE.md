@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-`task-kanban` — `create-next-app` でスキャフォルドされた Next.js 16（App Router, Turbopack）+ TypeScript + Tailwind CSS v4 プロジェクト。`.claude/settings.local.json` で `supabase` MCP サーバーを有効化している（現時点ではまだ利用コードはない）。
+`task-kanban` — `create-next-app` でスキャフォルドされた Next.js 16（App Router, Turbopack）+ TypeScript + Tailwind CSS v4 プロジェクト。UIコンポーネントは shadcn/ui（`npx shadcn@latest init`で導入済み）を使用する。`.claude/settings.local.json` で `supabase` MCP サーバーを有効化している。
 
 ## 技術スタック
 - Next.js
 - TypeScript
 - Supabase
+- shadcn/ui（UIコンポーネント。style: `radix-nova`、baseColor: `neutral`。コンポーネント追加は`npx shadcn@latest add <component>`）
 - Vitest + Testing Library（テスト）
 - Vercel (デプロイ)
 
@@ -41,15 +42,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 │   │       ├── page.tsx           # /tasks ルート。TaskBoardをレンダリングするだけ
 │   │       ├── task-board.tsx     # タスクのCRUD UI本体（Client Component）
 │   │       └── task-board.test.tsx
+│   ├── components/
+│   │   └── ui/            # shadcn/ui CLIで生成されたコンポーネント（`npx shadcn@latest add`で追加。手動で直接編集しない）
 │   ├── lib/
 │   │   ├── supabase.ts    # Supabaseクライアントと接続確認関数（checkSupabaseConnection）
 │   │   ├── tasks.ts       # tasksテーブルへのCRUD関数（fetchTasks/createTask/updateTask/deleteTask）
-│   │   └── tasks.test.ts
+│   │   ├── tasks.test.ts
+│   │   └── utils.ts       # shadcn/uiの`cn`をre-export（実体は`cn`パッケージ）
 │   ├── test-support/
 │   │   └── supabaseQueryMock.ts # Supabaseクエリビルダーのテスト用フェイク（createFakeQueryBuilder）
 │   └── instrumentation.ts # サーバ起動時にSupabase接続状況を確認するフック（register）
 ├── AGENTS.md              # next dev が自動生成・更新（削除しないこと）
 ├── CLAUDE.md
+├── components.json        # shadcn/ui CLIの設定（style/baseColor/aliases等。手動で直接編集しない）
 ├── eslint.config.mjs      # ESLint flat config
 ├── next.config.ts
 ├── tsconfig.json
@@ -68,6 +73,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `src/lib/tasks.ts`のCRUD関数はDB行（snake_case）とアプリ側の型（camelCase）をそれぞれ`TaskRow`/`Task`として分離し、`mapRowToTask`で変換する。Supabaseエラーは握り潰さず、`throw new Error("〜に失敗しました: ${error.message}")`の形で日本語メッセージに変換して呼び出し元に伝える
 - `task-board.tsx`は追加・編集・削除のそれぞれに独立した loading/error の state を持つ（`isAdding`/`addError`、`isUpdating`/`updateError`、`isDeleting`/`deleteError`）。削除は即実行せず、確認用のインライン状態（`confirmingDeleteId`）を経由する
 - エラーメッセージは`role="alert"`を付けたテキストで表示する（テストから`getByRole("alert")`で検証できるようにするため）
+- UIコンポーネントの追加は`npx shadcn@latest add <component>`で行い、`src/components/ui/`配下に生成する。生成後のコードは基本的に手動で書き換えない（再度`add`すると上書きされる前提のコードのため）
+- `src/app/globals.css`のテーマ変数（`--background`/`--primary`等）はshadcn/uiのCSS変数方式で管理されている。独自の色を追加する場合もこの変数方式に合わせる
+- `cn`（クラス名結合ユーティリティ）は`src/lib/utils.ts`経由でimportする（実体は`cn`パッケージの再exportであり、`clsx`/`tailwind-merge`を直接importしない）
 
 ## データモデル（Supabase）
 
