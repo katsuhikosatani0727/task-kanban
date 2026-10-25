@@ -100,6 +100,29 @@ describe("TaskList タスクごとのイベントのid引き渡し", () => {
     expect(props.onStartEditing).toHaveBeenCalledWith(taskA);
   });
 
+  it("異常系: 削除エラーは削除確認中のタスクのカードにのみ表示される", () => {
+    renderList({
+      tasks: [taskA, taskB],
+      confirmingDeleteId: taskA.id,
+      deleteError: "タスクの削除に失敗しました: network error",
+    });
+
+    expect(screen.getAllByRole("alert")).toHaveLength(2);
+    expect(
+      screen.getAllByText("タスクの削除に失敗しました: network error")
+    ).toHaveLength(1);
+  });
+
+  it("異常系: 更新エラーは編集中のタスクのカードにのみ表示される", () => {
+    renderList({
+      tasks: [taskA, taskB],
+      editingTaskId: taskA.id,
+      updateError: "タスクの更新に失敗しました: network error",
+    });
+
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+  });
+
   it("正常系: editingTaskIdと一致するタスクのみ編集フォームが表示される", () => {
     renderList({ tasks: [taskA, taskB], editingTaskId: taskA.id });
 

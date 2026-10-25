@@ -8,6 +8,10 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
 
 export const STATUS_OPTIONS: TaskStatus[] = ["todo", "in_progress", "done"];
 
+export function isTaskStatus(value: string): value is TaskStatus {
+  return (STATUS_OPTIONS as string[]).includes(value);
+}
+
 export const STATUS_BADGE_CLASSES: Record<TaskStatus, string> = {
   todo: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
   in_progress:

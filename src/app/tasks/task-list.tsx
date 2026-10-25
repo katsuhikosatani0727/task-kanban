@@ -80,7 +80,7 @@ export default function TaskList({
                 editDescription={editDescription}
                 editStatus={editStatus}
                 isUpdating={isUpdating}
-                updateError={updateError}
+                updateError={editingTaskId === task.id ? updateError : null}
                 onEditTitleChange={onEditTitleChange}
                 onEditDescriptionChange={onEditDescriptionChange}
                 onEditStatusChange={onEditStatusChange}
@@ -89,7 +89,9 @@ export default function TaskList({
                 onCancelEditing={onCancelEditing}
                 isConfirmingDelete={confirmingDeleteId === task.id}
                 isDeleting={isDeleting}
-                deleteError={deleteError}
+                deleteError={
+                  confirmingDeleteId === task.id ? deleteError : null
+                }
                 onRequestDelete={() => onRequestDelete(task.id)}
                 onCancelDelete={onCancelDelete}
                 onConfirmDelete={() => onConfirmDelete(task.id)}

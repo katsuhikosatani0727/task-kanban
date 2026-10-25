@@ -12,8 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { STATUS_BADGE_CLASSES, STATUS_LABELS } from "./task-status";
+import { cn } from "@/lib/utils";
 import TaskEditForm from "./task-edit-form";
+import { STATUS_BADGE_CLASSES, STATUS_LABELS } from "./task-status";
 
 interface TaskCardProps {
   task: Task;
@@ -88,7 +89,10 @@ export default function TaskCard({
         <CardAction>
           <Badge
             variant="outline"
-            className={`border-transparent ${STATUS_BADGE_CLASSES[task.status]}`}
+            className={cn(
+              "border-transparent",
+              STATUS_BADGE_CLASSES[task.status],
+            )}
           >
             {STATUS_LABELS[task.status]}
           </Badge>

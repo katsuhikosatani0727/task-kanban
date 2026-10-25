@@ -2,7 +2,12 @@ import type { FormEvent } from "react";
 import type { TaskStatus } from "@/lib/tasks";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { STATUS_LABELS, STATUS_OPTIONS } from "./task-status";
+import { isTaskStatus, STATUS_LABELS, STATUS_OPTIONS } from "./task-status";
 
 interface TaskEditFormProps {
   taskId: string;
@@ -68,7 +73,9 @@ export default function TaskEditForm({
           <Label htmlFor={`edit-status-${taskId}`}>編集: ステータス</Label>
           <Select
             value={status}
-            onValueChange={(value) => onStatusChange(value as TaskStatus)}
+            onValueChange={(value) => {
+              if (isTaskStatus(value)) onStatusChange(value);
+            }}
           >
             <SelectTrigger id={`edit-status-${taskId}`} className="w-full">
               <SelectValue />
